@@ -30,6 +30,18 @@ const readAndAppend = (content, file) => {
   });
 };
 
+// const deleteFromFile = (content, file) => {
+//   fs.deleteFile(file, "utf8", (err, data) => {
+//     if(err){
+//       console.error(err);
+//     } else {
+//       const parsedData = JSON.parse(data);
+//       parsedData.delete(content);
+//       writeToFile(file, parsedData);
+//     }
+//   })
+// }
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -39,14 +51,15 @@ app.get("/api/notes", (req, res) => {
 });
 
 app.post("/api/notes", (req, res) => {
-  const { noteTitle, noteText } = req.body;
-
+  const { title, text } = req.body;
+  console.log(req.body);
   if (req.body) {
     const newNote = {
-      noteTitle,
-      noteText,
+      title,
+      text,
       note_id: uuid(),
     };
+    console.log(newNote);
     readAndAppend(newNote, "db/db.json");
     res.json(`Note added`);
   } else {
@@ -61,6 +74,11 @@ app.get("/notes", (req, res) =>
 app.get("*", (req, res) =>
   res.sendFile(path.join(__dirname, "/public/index.html"))
 );
+
+// app.delete("api/notes/:id", (req, res) => {
+//   console.log(req.params.id);
+// })
+
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
