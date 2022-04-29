@@ -46,7 +46,7 @@ app.post("/api/notes", (req, res) => {
     const newNote = {
       title,
       text,
-      note_id: uuid(),
+      id: uuid(),
     };
     console.log(newNote);
     readAndAppend(newNote, "db/db.json");
@@ -56,13 +56,13 @@ app.post("/api/notes", (req, res) => {
   }
 });
 
-app.delete("/api/notes/:note_id", (req, res) => {
-  console.log(req.params.note_id);
-  const deleteId = req.params.note_id;
+app.delete("/api/notes/:id", (req, res) => {
+  console.log(req.params.id);
+  const deleteId = req.params.id;
   readFromFile("db/db.json")
     .then((data) => JSON.parse(data))
     .then((json) => {
-      const deletion = json.filter((app) => app.note_id !== deleteId);
+      const deletion = json.filter((app) => app.id !== deleteId);
       writeToFile("db/db.json", deletion);
       res.json(`Item ${deleteId} has been deleted`);
     });
