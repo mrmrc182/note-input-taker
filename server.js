@@ -11,6 +11,7 @@ const uuid = () =>
     .toString(16)
     .substring(1);
 
+
 const readFromFile = util.promisify(fs.readFile);
 
 const writeToFile = (destination, content) =>
@@ -29,18 +30,6 @@ const readAndAppend = (content, file) => {
     }
   });
 };
-
-// const deleteFromFile = (content, file) => {
-//   fs.deleteFile(file, "utf8", (err, data) => {
-//     if(err){
-//       console.error(err);
-//     } else {
-//       const parsedData = JSON.parse(data);
-//       parsedData.delete(content);
-//       writeToFile(file, parsedData);
-//     }
-//   })
-// }
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -67,6 +56,18 @@ app.post("/api/notes", (req, res) => {
   }
 });
 
+app.delete("/api/notes/:note_id", (req, res) => {
+  console.log(req.params.note_id);
+  const deleteId = req.params.note_id;
+  readFromFile("db/db.json")
+    .then((data) => JSON.parse(data))
+    .then((json) => {
+      const deletion = json.filter((app) => app.note_id !== deleteId);
+      writeToFile("db/db.json", deletion);
+      res.json(`Item ${deleteId} has been deleted`);
+    });
+});
+
 app.get("/notes", (req, res) =>
   res.sendFile(path.join(__dirname, "/public/notes.html"))
 );
@@ -74,11 +75,6 @@ app.get("/notes", (req, res) =>
 app.get("*", (req, res) =>
   res.sendFile(path.join(__dirname, "/public/index.html"))
 );
-
-// app.delete("api/notes/:id", (req, res) => {
-//   console.log(req.params.id);
-// })
-
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
